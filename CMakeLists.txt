@@ -34,6 +34,8 @@ set ( SOURCE_ONE_WEEKEND
   src/InOneWeekend/sphere.h
   src/InOneWeekend/vec3.h
 
+  src/InOneWeekend/mmap-windows.c
+
   src/InOneWeekend/main.cc
 )
 

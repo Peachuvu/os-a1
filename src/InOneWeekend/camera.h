@@ -18,6 +18,7 @@
 #include "material.h"
 
 #include <iostream>
+#include "mmap-windows.c"
 
 
 class camera {
@@ -35,6 +36,22 @@ class camera {
     double defocus_angle = 0;  // Variation angle of rays through each pixel
     double focus_dist = 10;    // Distance from camera lookfrom point to plane of perfect focus
 
+    void renderLine(const int j, const hittable& world)
+    {
+        int image_size_in_bytes = sizeof(color) * image_width * image_height;
+        color* rendered_image = (color*)mmap(nullptr, image_size_in_bytes,
+            PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+
+        for (int i = 0; i < image_width; ++i) {
+            color pixel_color(0, 0, 0);
+            for (int sample = 0; sample < samples_per_pixel; ++sample) {
+                ray r = get_ray(i, j);
+                pixel_color += ray_color(r, max_depth, world);
+            }
+            write_color(std::cout, pixel_color, samples_per_pixel);
+        }
+    }
+
     void render(const hittable& world) {
         initialize();
 
@@ -42,14 +59,7 @@ class camera {
 
         for (int j = 0; j < image_height; ++j) {
             std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
-            for (int i = 0; i < image_width; ++i) {
-                color pixel_color(0,0,0);
-                for (int sample = 0; sample < samples_per_pixel; ++sample) {
-                    ray r = get_ray(i, j);
-                    pixel_color += ray_color(r, max_depth, world);
-                }
-                write_color(std::cout, pixel_color, samples_per_pixel);
-            }
+            renderLine(j, world);
         }
 
         std::clog << "\rDone.                 \n";
