@@ -16,9 +16,13 @@
 #include "color.h"
 #include "hittable.h"
 #include "material.h"
+#include <windows.h> // Steffi
+#include <direct.h> // Steffi
 
 #include <iostream>
-#include "mmap-windows.c"
+#include "mmap-windows.c" // Steffi
+#include "unistd.h" // Steffi (kannst du eigentlich drin lassen, nur mit <>)
+#include "windefs.h" // Steffi
 
 
 class camera {
@@ -27,7 +31,7 @@ class camera {
     int    image_width       = 100;  // Rendered image width in pixel count
     int    samples_per_pixel = 10;   // Count of random samples for each pixel
     int    max_depth         = 10;   // Maximum number of ray bounces into scene
-    const int nb_of_cores = 8;
+    const int nb_of_cores = GetNumLogicalProcessors(); // aus unistd.h
 
     double vfov     = 90;              // Vertical view angle (field of view)
     point3 lookfrom = point3(0,0,-1);  // Point camera is looking from
@@ -61,7 +65,8 @@ class camera {
 
         for (int i = 0; i < nb_of_cores; ++i)
         {
-            pid_t p = fork();
+            //pid_t p = fork();
+           
         }
 
         std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
