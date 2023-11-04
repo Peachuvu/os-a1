@@ -27,6 +27,7 @@ class camera {
     int    image_width       = 100;  // Rendered image width in pixel count
     int    samples_per_pixel = 10;   // Count of random samples for each pixel
     int    max_depth         = 10;   // Maximum number of ray bounces into scene
+    const int nb_of_cores = 8;
 
     double vfov     = 90;              // Vertical view angle (field of view)
     point3 lookfrom = point3(0,0,-1);  // Point camera is looking from
@@ -36,30 +37,38 @@ class camera {
     double defocus_angle = 0;  // Variation angle of rays through each pixel
     double focus_dist = 10;    // Distance from camera lookfrom point to plane of perfect focus
 
-    void renderLine(const int j, const hittable& world)
+    void renderLine(const int row, const hittable& world, color* rendered_image)
     {
-        int image_size_in_bytes = sizeof(color) * image_width * image_height;
-        color* rendered_image = (color*)mmap(nullptr, image_size_in_bytes,
-            PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-
-        for (int i = 0; i < image_width; ++i) {
+        for (int col = 0; col < image_width; ++col) {
             color pixel_color(0, 0, 0);
             for (int sample = 0; sample < samples_per_pixel; ++sample) {
-                ray r = get_ray(i, j);
-                pixel_color += ray_color(r, max_depth, world);
+                ray ray = get_ray(col, row);
+                pixel_color += ray_color(ray, max_depth, world);
             }
-            write_color(std::cout, pixel_color, samples_per_pixel);
+            //write_color(std::cout, pixel_color, samples_per_pixel);
+            rendered_image[row * image_width + col] = pixel_color;
+
+
         }
     }
 
     void render(const hittable& world) {
         initialize();
 
+        int image_size_in_bytes = sizeof(color) * image_width * image_height;
+        color* rendered_image = (color*)mmap(nullptr, image_size_in_bytes, 
+            PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+
+        for (int i = 0; i < nb_of_cores; ++i)
+        {
+            pid_t p = fork();
+        }
+
         std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
         for (int j = 0; j < image_height; ++j) {
             std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
-            renderLine(j, world);
+            renderLine(j, world, rendered_image);
         }
 
         std::clog << "\rDone.                 \n";

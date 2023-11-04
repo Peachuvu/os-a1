@@ -13,12 +13,16 @@
 
 #include "camera.h"
 #include "color.h"
+#include <chrono>
 #include "hittable_list.h"
 #include "material.h"
 #include "sphere.h"
 
 
 int main() {
+    //start measuring time 
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
     hittable_list world;
 
     auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
@@ -77,4 +81,8 @@ int main() {
     cam.focus_dist    = 10.0;
 
     cam.render(world);
+
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    //std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
+    std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
 }
