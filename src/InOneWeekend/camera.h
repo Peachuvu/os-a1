@@ -31,7 +31,6 @@ class camera {
     int    image_width       = 100;  // Rendered image width in pixel count
     int    samples_per_pixel = 10;   // Count of random samples for each pixel
     int    max_depth         = 10;   // Maximum number of ray bounces into scene
-    const int nb_of_cores = GetNumLogicalProcessors(); // aus unistd.h
 
     double vfov     = 90;              // Vertical view angle (field of view)
     point3 lookfrom = point3(0,0,-1);  // Point camera is looking from
@@ -63,20 +62,34 @@ class camera {
         color* rendered_image = (color*)mmap(nullptr, image_size_in_bytes, 
             PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
-        for (int i = 0; i < nb_of_cores; ++i)
+        bool* read_lines = (bool*)mmap(nullptr, image_height, 
+            PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+
+        // die ID des originalen Prozesses merken
+        pid_t main_pid = getpid();
+        // erstelle so viele Prozesse wie Zeilen
+        for (int i = 0; i < image_height; ++i)
         {
-            //pid_t p = fork();
-           
+            pid_t p = fork();
         }
+
+        int rand = std::rand() % image_height;
+        while (read_lines[rand]) {
+            rand = std::rand() % image_height;
+        }
+
+        read_lines[rand] = true;
+        renderLine(rand, world, rendered_image);
 
         std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
-        for (int j = 0; j < image_height; ++j) {
-            std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
-            renderLine(j, world, rendered_image);
-        }
 
         std::clog << "\rDone.                 \n";
+
+        if (getpid() != main_pid) 
+        {
+            exit(0);
+        }
     }
 
   private:

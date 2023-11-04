@@ -9,7 +9,6 @@
 // along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 //==============================================================================================
 
-#include "rtweekend.h"
 
 #include "camera.h"
 #include "color.h"
