@@ -73,20 +73,20 @@ class camera {
             pid_t p = fork();
         }
 
-        /*int rand = std::rand() % image_height;
+        int rand = std::rand() % image_height;
         while (read_lines[rand]) {
             rand = std::rand() % image_height;
-        }*/
+        }
 
-        int index = 0;
+        /*int index = 0;
 
         while (read_lines[index]) {
             ++index;
             index = (index * index + image_height) % image_height;
-        }
+        }*/
 
-        read_lines[index] = true;
-        renderLine(index, world, rendered_image);
+        read_lines[rand] = true;
+        renderLine(rand, world, rendered_image);
 
         std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
