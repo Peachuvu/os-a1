@@ -17,13 +17,12 @@
 #include "hittable.h"
 #include "material.h"
 #include <iostream>
-#include <sys/mman.h>
 
-/*#include <windows.h> // Steffi
-#include <direct.h> // Steffi
-#include "mmap-windows.c" // Steffi
-#include "unistd.h" // Steffi (kannst du eigentlich drin lassen, nur mit <>)
-#include "windefs.h" // Steffi*/
+//--- neue includes ---//
+#include <sys/mman.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 
 class camera {
@@ -41,18 +40,20 @@ class camera {
     double defocus_angle = 0;  // Variation angle of rays through each pixel
     double focus_dist = 10;    // Distance from camera lookfrom point to plane of perfect focus
 
-    void renderLine(const int row, const hittable& world, color* rendered_image)
+    //--- neues Attribut der Klasse, sodass es nicht über die Parameter vergeben werden muss ---//
+    color* rendered_image;
+
+    //--- neue eigene Methode ---//
+    void renderLine(const int row, const hittable& world)
     {
         for (int col = 0; col < image_width; ++col) {
             color pixel_color(0, 0, 0);
             for (int sample = 0; sample < samples_per_pixel; ++sample) {
-                ray ray = get_ray(col, row);
-                pixel_color += ray_color(ray, max_depth, world);
+                ray r = get_ray(col, row);
+                pixel_color += ray_color(r, max_depth, world);
             }
-            //write_color(std::cout, pixel_color, samples_per_pixel);
+
             rendered_image[row * image_width + col] = pixel_color;
-
-
         }
     }
 
@@ -60,29 +61,30 @@ class camera {
         initialize();
 
         int image_size_in_bytes = sizeof(color) * image_width * image_height;
-        color* rendered_image = (color*)mmap(nullptr, image_size_in_bytes, 
+
+        //--- Definition des geteilten Arrays für das Bild ---//
+        rendered_image = (color*)mmap(nullptr, image_size_in_bytes, 
             PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
         
+        //--- Anzahl an Kernen = Anzahl an benötigten Kindprozessen ---//
         const int nb_of_cores = 8;
-        
 
         for (int i = 0; i < nb_of_cores; ++i)
         {
             if (fork() == 0)
             {
-                // Unterteilung nicht in Zeilen, sondern in nb_of_cores grosse Abschnitte
+                //--- Unterteilung nicht in Zeilen, sondern in nb_of_cores grosse Abschnitte ---//
                 for (int row = i * image_height / nb_of_cores; row < (i + 1) * image_height / nb_of_cores; ++row)
                 {
-                    std::clog << "\rScanlines remaining: " << (image_height - row) << ' ' << std::flush; // Gibt an wie lange die Berechnung noch dauert
-                    renderLine(row, world, rendered_image);
+                    renderLine(row, world);
                 }
                 exit(0);
             }
         }
 
 
-
+        //--- Kindprozesse werden beendet, Elternprozess wartet, bis alle Kindprozesse terminiert sind ---//
         for (int i = 0; i < nb_of_cores; ++i)
         {
             wait(NULL);
@@ -93,10 +95,12 @@ class camera {
         {
             for (int i = 0; i < image_width; ++i)
             {
+                //--- Bildausgabe ---//
                 write_color(std::cout, rendered_image[j * image_width + i], samples_per_pixel);
             }
         }
 
+        //--- Speicher des geteilten Arrays wieder freigeben ---//
         munmap(rendered_image, image_size_in_bytes);
 
         std::clog << "\rDone.                 \n";
