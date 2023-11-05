@@ -19,8 +19,6 @@
 
 
 int main() {
-    //start measuring time 
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
     hittable_list world;
 
@@ -78,6 +76,9 @@ int main() {
 
     cam.defocus_angle = 0.6;
     cam.focus_dist    = 10.0;
+
+    //start measuring time 
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
     cam.render(world);
 
