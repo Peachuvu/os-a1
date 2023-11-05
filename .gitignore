@@ -4,3 +4,4 @@ build/
 /*.ppm
 
 /v3/*.ppm
+/src/InOneWeekend/windefs.h
