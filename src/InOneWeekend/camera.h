@@ -19,7 +19,7 @@
 #include <iostream>
 #include <sys/mman.h>
 
-/*#include <windows.h> // Steffi
+#include <windows.h> // Steffi
 #include <direct.h> // Steffi
 #include "mmap-windows.c" // Steffi
 #include "unistd.h" // Steffi (kannst du eigentlich drin lassen, nur mit <>)
@@ -64,7 +64,7 @@ class camera {
             PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
         
-        const int nb_of_cores = image_height;
+        const int nb_of_cores = 8;
         
 
         for (int i = 0; i < nb_of_cores; ++i)
@@ -87,7 +87,7 @@ class camera {
 
         //std::clog << "\rDone.                 \n";
 
-        for (int i = 0; i < nb_of_cores; i++)
+        for (int i = 0; i < nb_of_cores; ++i)
         {
             wait(NULL);
         }
