@@ -86,9 +86,9 @@ class camera {
 
         //std::clog << "\rDone.                 \n";
 
-        if (getpid() != main_pid) 
+        for (int i = 0; i < image_height; i++)
         {
-            exit(0);
+            wait(NULL);
         }
 
         for (int j = 0; j < image_height; ++j)
