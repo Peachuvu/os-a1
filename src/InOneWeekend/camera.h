@@ -63,9 +63,6 @@ class camera {
         color* rendered_image = (color*)mmap(nullptr, image_size_in_bytes, 
             PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
-        bool* read_lines = (bool*)mmap(nullptr, image_height, 
-            PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-
         
         const int nb_of_cores = GetNumLogicalProcessors();
         
