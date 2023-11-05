@@ -17,7 +17,7 @@
 #include "hittable.h"
 #include "material.h"
 #include <iostream>
-#include <sys/mman.h>
+//#include <sys/mman.h>
 
 #include <windows.h> // Steffi
 #include <direct.h> // Steffi
@@ -74,6 +74,7 @@ class camera {
                 // Unterteilung nicht in Zeilen, sondern in nb_of_cores grosse Abschnitte
                 for (int row = i * image_height / nb_of_cores; row < (i + 1) * image_height / nb_of_cores; ++row)
                 {
+                    std::clog << "\rScanlines remaining: " << (image_height - row) << ' ' << std::flush; // Gibt an wie lange die Berechnung noch dauert
                     renderLine(row, world, rendered_image);
                 }
                 exit(0);
