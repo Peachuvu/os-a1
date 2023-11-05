@@ -81,10 +81,6 @@ class camera {
             }
         }
 
-        
-
-        //std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
-
 
 
         for (int i = 0; i < nb_of_cores; ++i)
