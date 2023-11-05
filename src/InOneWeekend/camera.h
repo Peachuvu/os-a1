@@ -16,13 +16,14 @@
 #include "color.h"
 #include "hittable.h"
 #include "material.h"
-#include <windows.h> // Steffi
-#include <direct.h> // Steffi
-
 #include <iostream>
+#include <sys/mman.h>
+
+/*#include <windows.h> // Steffi
+#include <direct.h> // Steffi
 #include "mmap-windows.c" // Steffi
 #include "unistd.h" // Steffi (kannst du eigentlich drin lassen, nur mit <>)
-#include "windefs.h" // Steffi
+#include "windefs.h" // Steffi*/
 
 
 class camera {
