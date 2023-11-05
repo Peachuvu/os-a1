@@ -65,28 +65,30 @@ class camera {
         bool* read_lines = (bool*)mmap(nullptr, image_height, 
             PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
-        // die ID des originalen Prozesses merken
-        pid_t main_pid = getpid();
-        // erstelle so viele Prozesse wie Zeilen
-        for (int i = 0; i < image_height; ++i)
+        
+        const int nb_of_cores = GetNumLogicalProcessors();
+        
+
+        for (int i = 0; i < nb_of_cores; ++i)
         {
-            pid_t p = fork();
+            if (fork() == 0)
+            {
+                for (int row = i * image_height / nb_of_cores; row < (i + 1) * image_height / nb_of_cores; ++row)
+                {
+                    renderLine(row, world, rendered_image);
+                }
+                exit(0);
+            }
         }
 
-        int rand = std::rand() % image_height;
-        while (read_lines[rand]) {
-            rand = std::rand() % image_height;
-        }
-
-        read_lines[rand] = true;
-        renderLine(rand, world, rendered_image);
+        
 
         //std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
 
         //std::clog << "\rDone.                 \n";
 
-        for (int i = 0; i < image_height; i++)
+        for (int i = 0; i < nb_of_cores; i++)
         {
             wait(NULL);
         }
