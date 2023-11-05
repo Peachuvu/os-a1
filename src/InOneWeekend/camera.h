@@ -88,14 +88,22 @@ class camera {
         read_lines[rand] = true;
         renderLine(rand, world, rendered_image);
 
-        std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+        //std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
 
-        std::clog << "\rDone.                 \n";
+        //std::clog << "\rDone.                 \n";
 
         if (getpid() != main_pid) 
         {
             exit(0);
+        }
+
+        for (int j = 0; j < image_height; ++j)
+        {
+            for (int i = 0; i < image_width; ++i)
+            {
+                write_color(std::cout, rendered_image[j * image_width + i], samples_per_pixel);
+            }
         }
     }
 
