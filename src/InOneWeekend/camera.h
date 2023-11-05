@@ -17,9 +17,9 @@
 #include "hittable.h"
 #include "material.h"
 #include <iostream>
-//#include <sys/mman.h>
+#include <sys/mman.h>
 
-#include <windows.h> // Steffi
+/*#include <windows.h> // Steffi
 #include <direct.h> // Steffi
 #include "mmap-windows.c" // Steffi
 #include "unistd.h" // Steffi (kannst du eigentlich drin lassen, nur mit <>)
