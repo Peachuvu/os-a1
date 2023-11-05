@@ -86,7 +86,6 @@ class camera {
         //std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
 
-        //std::clog << "\rDone.                 \n";
 
         for (int i = 0; i < nb_of_cores; ++i)
         {
@@ -103,7 +102,7 @@ class camera {
 
         munmap(rendered_image, image_size_in_bytes);
 
-        std::clog << "\rDone.             \n";
+        std::clog << "\rDone.                 \n";
     }
 
   private:
