@@ -64,13 +64,14 @@ class camera {
             PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
         
-        const int nb_of_cores = GetNumLogicalProcessors();
+        const int nb_of_cores = image_height;
         
 
         for (int i = 0; i < nb_of_cores; ++i)
         {
             if (fork() == 0)
             {
+                // Unterteilung nicht in Zeilen, sondern in nb_of_cores grosse Abschnitte
                 for (int row = i * image_height / nb_of_cores; row < (i + 1) * image_height / nb_of_cores; ++row)
                 {
                     renderLine(row, world, rendered_image);
