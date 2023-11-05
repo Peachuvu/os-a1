@@ -78,13 +78,6 @@ class camera {
             rand = std::rand() % image_height;
         }
 
-        /*int index = 0;
-
-        while (read_lines[index]) {
-            ++index;
-            index = (index * index + image_height) % image_height;
-        }*/
-
         read_lines[rand] = true;
         renderLine(rand, world, rendered_image);
 
@@ -105,6 +98,10 @@ class camera {
                 write_color(std::cout, rendered_image[j * image_width + i], samples_per_pixel);
             }
         }
+
+        munmap(rendered_image, image_size_in_bytes);
+
+        std::clog << "\rDone.             \n";
     }
 
   private:
